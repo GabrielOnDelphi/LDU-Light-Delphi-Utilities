@@ -24,7 +24,7 @@ procedure OpenFileInIDE(SearchRes: TSearchResult; CurPos: Integer);  overload;
 implementation {$R *.dfm}
 
 USES
-   LightVcl.Common.IO, LightCore, LightVcl.Common.Dialogs;
+   LightVcl.Common.IO, LightCore, LightCore.Time, LightCore.Types, LightVcl.Common.Dialogs;
 
 
 {-------------------------------------------------------------------------------------------------------------

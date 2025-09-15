@@ -68,7 +68,7 @@ procedure CreateAgentForm(ID: integer);
 IMPLEMENTATION {$R *.dfm}
 
 USES
-   LightVcl.Common.IO, LightCore, LightCore.IO, LightCore.TextFile, LightCore.AppData, LightVcl.Common.AppData, LightVcl.Visual.INIFile, LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell,
+   LightVcl.Common.IO, LightCore, LightCore.Time, LightCore.Types, LightCore.IO, LightCore.TextFile, LightCore.AppData, LightVcl.Common.AppData, LightVcl.Visual.INIFile, LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell,
    FormOTA, FormEditor, FormOptions, FormExclude,
    dutAgentFactory;
 

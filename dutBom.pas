@@ -50,7 +50,7 @@ TYPE
 IMPLEMENTATION
 
 USES
-   LightCore.Pascal, LightCore, LightCore.TextFile;
+   LightCore.Pascal, LightCore, LightCore.Time, LightCore.Types, LightCore.TextFile;
 
 
 

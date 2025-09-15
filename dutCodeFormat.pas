@@ -26,7 +26,7 @@ TYPE
 
 IMPLEMENTATION
 USES
-   LightCore.TextFile, LightCore.IO, LightCore.Pascal, LightCore;
+   LightCore.TextFile, LightCore.IO, LightCore.Pascal, LightCore, LightCore.Time;
 
 
 class function TAgent_CodeFormat.Description: string;

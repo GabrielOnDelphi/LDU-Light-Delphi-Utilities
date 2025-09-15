@@ -43,7 +43,7 @@ TYPE
 IMPLEMENTATION
 
 USES
-   LightCore.Pascal, LightCore;
+   LightCore.Pascal, LightCore, LightCore.Time;
 
 
 

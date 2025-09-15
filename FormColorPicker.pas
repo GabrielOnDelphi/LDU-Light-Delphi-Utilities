@@ -5,7 +5,7 @@ INTERFACE
 
 USES
   Windows, SysUtils, Classes, Graphics, Controls, Vcl.Forms, LightVcl.Common.AppDataForm, Dialogs,
-  StdCtrls, LightCore, LightVcl.Graph.Util, ExtCtrls, Vcl.Mask;
+  StdCtrls, LightCore, LightCore.Time, LightCore.Types, LightVcl.Graph.Util, ExtCtrls, Vcl.Mask;
 
 TYPE
   TfrmClrPick = class(TLightForm)

@@ -50,7 +50,7 @@ TYPE
 
 IMPLEMENTATION {$R *.dfm}
 USES
-   LightCore.Pascal, LightCore.AppData, LightCore;
+   LightCore.Pascal, LightCore.AppData, LightCore, LightCore.Time;
 
 
 

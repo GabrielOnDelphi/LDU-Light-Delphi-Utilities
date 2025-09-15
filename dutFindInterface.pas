@@ -50,7 +50,7 @@ TYPE
 IMPLEMENTATION {$R *.dfm}
 USES
    LightCore.AppData, LightVcl.Common.AppData
-, LightCore.Pascal, LightCore;
+, LightCore.Pascal, LightCore, LightCore.Time;
 
 
 class function TAgent_FindInterface.AgentName: string;
