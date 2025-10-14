@@ -27,6 +27,7 @@ object frmOTA: TfrmOTA
       'Col=12'
       'Comment=')
     TabOrder = 0
+    WordWrap = False
   end
   object btnTest: TButton
     Left = 23
