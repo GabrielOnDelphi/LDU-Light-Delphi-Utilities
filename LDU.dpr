@@ -23,7 +23,8 @@ uses
   dutFindInterface in 'dutFindInterface.pas' {frmSettingsIntf},
   dutBom in 'dutBom.pas',
   LightVcl.Common.AppData in '..\..\LightSaber\FrameVCL\LightVcl.Common.AppData.pas',
-  LightCore.AppData in '..\..\LightSaber\LightCore.AppData.pas';
+  LightCore.AppData in '..\..\LightSaber\LightCore.AppData.pas',
+  dutFixLineEndings in 'dutFixLineEndings.pas' {frmSettings};
 
 {$R *.res}
 
