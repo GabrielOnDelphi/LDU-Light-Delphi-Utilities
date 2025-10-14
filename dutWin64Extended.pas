@@ -1,4 +1,4 @@
-UNIT dutWin64Extended;
+﻿UNIT dutWin64Extended;
 
 {=============================================================================================================
    Gabriel Moraru
@@ -13,10 +13,10 @@ UNIT dutWin64Extended;
 INTERFACE
 
 USES
-  System.SysUtils, System.Classes, LightCore.SearchResult, dutBase;
+  System.SysUtils, System.Classes, System.Character, LightCore.SearchResult, dutBase;
 
 TYPE
-  // Extended
+  // Search for 'Extended' in packed records
   TAgent_ExtendedPacked = class(TBaseAgent)
   public
     procedure Execute(const FileName: string); override;
@@ -24,6 +24,7 @@ TYPE
     class function AgentName: string; override;
   end;
 
+  // Search for 'Extended' everywhere in code
   TAgent_Extended = class(TBaseAgent)
   public
     procedure Execute(const FileName: string); override;
@@ -102,39 +103,146 @@ class function TAgent_Extended.Description: string;
 begin
    Result:=
     'This agent looks for occurrences of the Extended type and reports them.'  +CRLF+
-    'It is recommended to replace Extended with Double.' +CRLF+
+    'For 64 bit compatibility, it is recommended to replace Extended with Double.' +CRLF+
     'Details: '+ CRLF+
     '  On Win32, the size of System.Extended type is 10 bytes.'+ CRLF+
     '  However, on Win64, the System.Extended type is an alias for System.Double, which is only 8 bytes!'+ CRLF+
-    '  There is no 10-byte equivalent for Extended on 64-bit.'+ CRLF+
+    '  There is no 10-byte equivalent for Extended on 64-bit!'+ CRLF+
     '  Under normal circumstances, this does not create huge problems, except for a sligly precision degradation.';
 end;
 
 
 procedure TAgent_Extended.Execute(const FileName: string);
+const
+  Token = 'EXTENDED';
 var
-  iColumn, iLine: Integer;
-  sLine: String;
+  iLine, j, L: Integer;
+  sLine, UpLine: string;
+  inSingleQuote, inBraceComment, inParenStarComment: Boolean;
+
+  function IsIdentChar(c: Char): Boolean;
+  begin
+    // Unicode-safe identifier check: letters, digits or underscore
+    Result := (c = '_') or TCharacter.IsLetterOrDigit(c);
+  end;
+
 begin
   inherited Execute(FileName);
 
+  // Persist comment state across lines so multi-line comments are handled correctly
+  inBraceComment := False;
+  inParenStarComment := False;
+
   for iLine := 0 to TextBody.Count - 1 do
   begin
-    // Skip commented lines
-    sLine:= TextBody[iLine];
-    if LineIsAComment(sLine) then Continue;
+    sLine := TextBody[iLine];
+    UpLine := UpperCase(sLine);
+    L := Length(sLine);
 
-    // Find Extended type declarations
-    iColumn := PosInsensitive('Extended', sLine);
-    if iColumn > 0 then
-      // Check that it's not a part of a longer word (e.g., "ExtendedType")
-      if (iColumn + Length('Extended') <= Length(sLine))
-      AND (NOT CharIsLetter(sLine[iColumn + Length('Extended')]) )
-      then SearchResults.Last.AddNewPos(iLine, iColumn, sLine, 'Extended type found', 'Replace Extended with Double');
-  end;
+    // Quick fast-path: if whole line is a leading comment, skip it
+    if LineIsAComment(sLine) and not (inBraceComment or inParenStarComment) then
+      Continue;
+
+    // single-quoted strings don't usually span lines; reset per line
+    inSingleQuote := False;
+
+    j := 1;
+    while j <= L do
+    begin
+      // If inside a single-quoted string literal
+      if inSingleQuote then
+      begin
+        if sLine[j] = '''' then
+        begin
+          // doubled '' escapes a quote
+          if (j < L) and (sLine[j + 1] = '''') then
+            Inc(j, 2)
+          else
+          begin
+            inSingleQuote := False;
+            Inc(j);
+          end;
+        end
+        else
+          Inc(j);
+        Continue;
+      end;
+
+      // If currently inside { ... } comment (may span lines)
+      if inBraceComment then
+      begin
+        if sLine[j] = '}' then
+          inBraceComment := False;
+        Inc(j);
+        Continue;
+      end;
+
+      // If currently inside (* ... *) comment (may span lines)
+      if inParenStarComment then
+      begin
+        if (sLine[j] = '*') and (j < L) and (sLine[j + 1] = ')') then
+        begin
+          inParenStarComment := False;
+          Inc(j, 2);
+        end
+        else
+          Inc(j);
+        Continue;
+      end;
+
+      // Not inside string/comment: check for comment/string starts
+      if sLine[j] = '''' then
+      begin
+        inSingleQuote := True;
+        Inc(j);
+        Continue;
+      end;
+
+      if sLine[j] = '{' then
+      begin
+        inBraceComment := True;
+        Inc(j);
+        Continue;
+      end;
+
+      if (sLine[j] = '(') and (j < L) and (sLine[j + 1] = '*') then
+      begin
+        inParenStarComment := True;
+        Inc(j, 2);
+        Continue;
+      end;
+
+      // '//' starts a line comment: rest of line is ignored
+      if (sLine[j] = '/') and (j < L) and (sLine[j + 1] = '/') then
+        Break;
+
+      // Candidate token check (only if enough chars remain)
+      if (j + Length(Token) - 1) <= L then
+      begin
+        if Copy(UpLine, j, Length(Token)) = Token then
+        begin
+          // check surrounding chars: both must NOT be identifier chars
+          if (j = 1) or (not IsIdentChar(sLine[j - 1])) then
+          begin
+            if (j + Length(Token) - 1 = L) or (not IsIdentChar(sLine[j + Length(Token)])) then
+            begin
+              // Standalone 'Extended' token found
+              SearchResults.Last.AddNewPos(iLine, j, sLine, 'Extended type found', 'Replace Extended with Double');
+              // report first occurrence on the line; remove Break to report multiple
+              Break;
+            end;
+          end;
+        end;
+      end;
+
+      Inc(j);
+    end; // while j
+  end; // for iLine
 
   Finalize; // Increment counters
 end;
+
+
 
 
 
