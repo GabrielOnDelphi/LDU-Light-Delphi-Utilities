@@ -1,12 +1,11 @@
-UNIT dutFindCode;
+﻿UNIT dutFindCode;
 
 {=============================================================================================================
-   Gabriel Moraru
    2025.01
    www.GabrielMoraru.com
    See Copyright file
 --------------------------------------------------------------------------------------------------------------
-   Find Delphi code
+   AGENT: Find Delphi code
 -------------------------------------------------------------------------------------------------------------}
 
 INTERFACE
@@ -54,9 +53,17 @@ USES
 
 
 
+
+class function TAgent_FindCode.Description: string;
+begin
+  Result:= 'Find all files containing the specified text.'+ CRLF+
+           ' and outputs the lines to screen.';
+end;
+
+
 constructor TAgent_FindCode.Create(BackupFile: Boolean);
 begin
-  inherited;
+  inherited Create(BackupFile);
   AppData.CreateForm(TfrmSettingsFindCode, FormSettings, FALSE, asFull);   //Freed by: TAgent_FindCode.Destroy
 end;
 
@@ -95,16 +102,10 @@ begin
           if NOT ExcludedWordFound
           then SearchResults.Last.AddNewPos(iLine, iColumn, sLine);
         end;
-    end;
-
-  Finalize; // Increment counters
-end;
-
-
-class function TAgent_FindCode.Description: string;
-begin
-  Result:= 'Find all files containing the specified text.'+ CRLF+
-           ' and outputs the lines to screen.';
+    end;     
+	
+  // Finalize handles internal counters and cleanup.
+  Finalize;
 end;
 
 
@@ -125,6 +126,7 @@ end;
 
 destructor TAgent_FindCode.Destroy;
 begin
+  FormSettings.Container.Parent:= FormSettings; // Bring the container back
   FreeAndNil(FormSettings);
   inherited;
 end;

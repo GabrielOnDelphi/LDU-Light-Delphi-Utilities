@@ -17,7 +17,7 @@ INTERFACE
 
 USES
   System.SysUtils, System.Classes, Vcl.ExtCtrls,
-  LightCore.SearchResult, LightCore.TextFile;
+  LightCore.SearchResult, LightCore.TextFile, LightCore.INIFile;
 
 TYPE
   TBaseAgent= class(TObject)
@@ -25,12 +25,15 @@ TYPE
     FBackupFile: Boolean;          // If true, create a backup file IF the file is changed (in case of 'replace')
     procedure DoSave;
     procedure NewFile(const FileName: String);
+    procedure LoadSettings;
+    procedure SaveSettings;
    protected
     FFound  : Boolean;             // I already have:  SearchResults.Last.Found !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   // The searched text was found
     FRelaxed: Boolean;             // Uses a relaxed search. More exhaustive but can give more false positives
     TextBody: TStringList;
    public
     Needle: string;                // Text to find. Some agents will not use this field.
+    LastPath: string;
 
     // Settings
     Preamble: TWritePreamble;      //Todo: implement this (global GUI)
@@ -60,7 +63,7 @@ TYPE
 
 
 IMPLEMENTATION
-USES LightCore.IO;
+USES LightCore.AppData, LightCore.IO;
 
 
 {-------------------------------------------------------------------------------------------------------------
@@ -74,11 +77,13 @@ begin
   TextBody     := TStringList.Create;
   TextBody.Text:= 'Nothing loaded yet!';
   SearchResults:= TSearchResults.Create(True);
+  LoadSettings;
 end;
 
 
 destructor TBaseAgent.Destroy;
 begin
+  SaveSettings;
   FreeAndNil(TextBody);
   FreeAndNil(SearchResults);
   inherited Destroy;
@@ -167,4 +172,36 @@ begin
   //To be overwritten by child
 end;
 
+
+procedure TBaseAgent.LoadSettings;
+var Ini: TIniFileEx;
+begin
+  if not FileExists(AppDataCore.IniFile) then Exit;
+  Ini:= TIniFileEx.Create('AGENTS', AppDataCore.IniFile);
+  try
+    LastPath:= Ini.Read('LastPath', 'C:\Projects\Delphi');
+  finally
+    Ini.Free;
+  end;
+end;
+
+
+procedure TBaseAgent.SaveSettings;
+var Ini: TIniFileEx;
+begin
+  if not FileExists(AppDataCore.IniFile) then Exit;
+  Ini:= TIniFileEx.Create('AGENTS', AppDataCore.IniFile);
+  try
+    Ini.Write('LastPath', LastPath);
+  finally
+    Ini.Free;
+  end;
+end;
+
 end.
+
+
+
+
+
+

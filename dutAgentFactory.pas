@@ -1,4 +1,4 @@
-UNIT dutAgentFactory;
+﻿UNIT dutAgentFactory;
 
 {=============================================================================================================
    Gabriel Moraru
@@ -30,7 +30,7 @@ function IDToClassName(const ID: Integer): TAgentClass;
 IMPLEMENTATION
 
 USES
-  dutWin64Pointer, dutUpgradeCode, dutWin64Api, dutFindInterface, dutBom, dutFindCode, dutWin64Extended, dutCodeFormat;
+  dutFixLineEndings, dutWin64Pointer, dutUpgradeCode, dutWin64Api, dutFindInterface, dutBom, dutFindCode, dutWin64Extended, dutCodeFormat;
 
 
 
@@ -56,9 +56,10 @@ function IDToClassName(const ID: Integer): TAgentClass;
 begin
   case ID of
     // Upgrade code
-    1: Result := TAgent_TryExcept;     // Try/Except
-    2: Result := TAgent_SetFocus;      // SetFocus
-    3: Result := TAgent_FreeAndNil;    // FreeAndNil
+    1: Result := TAgent_TryExcept;       // Try/Except
+    2: Result := TAgent_SetFocus;        // SetFocus
+    3: Result := TAgent_FreeAndNil;      // FreeAndNil
+    4: Result := TAgent_FixLineEndings;  // ReplaceEnters
 
     // Find code
     10: Result := TAgent_FindInterface;
