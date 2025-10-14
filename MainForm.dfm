@@ -4,7 +4,7 @@ object frmMain: TfrmMain
   AlphaBlend = True
   AlphaBlendValue = 250
   Caption = 'LDU (Light Delphi Utilities) - Gabriel Moraru 2022'
-  ClientHeight = 528
+  ClientHeight = 567
   ClientWidth = 769
   Color = clBtnFace
   DoubleBuffered = True
@@ -19,7 +19,7 @@ object frmMain: TfrmMain
   SnapBuffer = 3
   DesignSize = (
     769
-    528)
+    567)
   TextHeight = 17
   object lblDescription: TLabel
     AlignWithMargins = True
@@ -36,7 +36,7 @@ object frmMain: TfrmMain
     Left = 0
     Top = 0
     Width = 193
-    Height = 528
+    Height = 567
     Align = alLeft
     BevelOuter = bvNone
     TabOrder = 0
@@ -45,7 +45,7 @@ object frmMain: TfrmMain
       Left = 3
       Top = 3
       Width = 187
-      Height = 476
+      Height = 515
       VertScrollBar.Tracking = True
       Align = alClient
       BevelInner = bvNone
@@ -59,12 +59,10 @@ object frmMain: TfrmMain
       ParentColor = True
       TabOrder = 0
       object catTools: TCategoryPanel
-        Top = 180
-        Height = 30
-        Caption = 'Tools'
-        Collapsed = True
+        Top = 391
+        Height = 91
+        Caption = 'Other tools'
         TabOrder = 0
-        ExpandedHeight = 91
         object btnColorPick: TButton
           Tag = 5
           AlignWithMargins = True
@@ -98,12 +96,10 @@ object frmMain: TfrmMain
         end
       end
       object catImprove: TCategoryPanel
-        Top = 150
-        Height = 30
+        Top = 271
+        Height = 120
         Caption = 'Improve code'
-        Collapsed = True
         TabOrder = 1
-        ExpandedHeight = 120
         object btnFreeAndNil3: TButton
           Tag = 3
           AlignWithMargins = True
@@ -159,7 +155,7 @@ object frmMain: TfrmMain
         end
       end
       object cat64bit: TCategoryPanel
-        Top = 120
+        Top = 241
         Height = 30
         Caption = '32 to 64-bit upgrade'
         Collapsed = True
@@ -296,11 +292,9 @@ object frmMain: TfrmMain
       end
       object catText: TCategoryPanel
         Top = 90
-        Height = 30
+        Height = 151
         Caption = 'Text files'
-        Collapsed = True
         TabOrder = 3
-        ExpandedHeight = 151
         object btnBOM: TButton
           Tag = 22
           AlignWithMargins = True
@@ -350,7 +344,7 @@ object frmMain: TfrmMain
           OnMouseEnter = btnMouseEnter
         end
         object btnCrLf: TButton
-          Tag = -1
+          Tag = 4
           AlignWithMargins = True
           Left = 3
           Top = 92
@@ -365,7 +359,7 @@ object frmMain: TfrmMain
           Caption = 'Fix CRLF'
           TabOrder = 3
           WordWrap = True
-          OnClick = btnCrLfClick
+          OnClick = StartTask
           OnMouseEnter = btnMouseEnter
         end
       end
@@ -415,7 +409,7 @@ object frmMain: TfrmMain
     object chkReopenLast: TCubicCheckBox
       AlignWithMargins = True
       Left = 3
-      Top = 508
+      Top = 547
       Width = 187
       Height = 17
       Hint = 'When the program starts, reopen the last used agent'
@@ -429,7 +423,7 @@ object frmMain: TfrmMain
     object chkHideMainForm: TCubicCheckBox
       AlignWithMargins = True
       Left = 3
-      Top = 485
+      Top = 524
       Width = 187
       Height = 17
       Hint = 'Hide this form when an agent is open'
@@ -446,58 +440,6 @@ object frmMain: TfrmMain
     Height = 123
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 1
-    object lblHomePage: TInternetLabel
-      AlignWithMargins = True
-      Left = 4
-      Top = 104
-      Width = 560
-      Height = 15
-      Cursor = crHandPoint
-      Align = alBottom
-      Alignment = taCenter
-      Anchors = [akLeft, akTop, akRight]
-      Caption = 'More tools'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlue
-      Font.Height = -12
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      ParentFont = False
-      WordWrap = True
-      Link = 'https://GabrielMoraru.com'
-      LinkHint = False
-      Visited = False
-      VisitedColor = clPurple
-      NotVisitedColor = clBlue
-      OverColor = clRed
-    end
-    object lblNoteOta: TInternetLabel
-      AlignWithMargins = True
-      Left = 4
-      Top = 4
-      Width = 560
-      Height = 30
-      Cursor = crHandPoint
-      Align = alTop
-      Alignment = taCenter
-      Caption = 
-        'Note: You need to install "OTA Package\IDEFileReceiver.dpk" '#13#10'in' +
-        ' order to be able to send Pas files from this tool to the Delphi' +
-        ' IDE for editing.'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlue
-      Font.Height = -12
-      Font.Name = 'Segoe UI'
-      Font.Style = []
-      ParentFont = False
-      WordWrap = True
-      Link = 'https://GabrielMoraru.com'
-      LinkHint = False
-      Visited = False
-      VisitedColor = clPurple
-      NotVisitedColor = clBlue
-      OverColor = clRed
-    end
     object btnSettings: TButton
       Tag = 3
       AlignWithMargins = True

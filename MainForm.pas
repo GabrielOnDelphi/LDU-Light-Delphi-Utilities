@@ -1,4 +1,4 @@
-UNIT MainForm;
+﻿UNIT MainForm;
 
 {=============================================================================================================
    Gabriel Moraru
@@ -11,8 +11,6 @@ UNIT MainForm;
    Features:
      Ignores lines that start with a comment symbol:   // { (*
 -------------------------------------------------------------------------------------------------------------}
-//ToDo: remember which panels were collapsed
-//ToDo: freezes when typing in "path"Apply button in LDU, in Path
 //ToDo: button to allow user so save gui
 
 INTERFACE
@@ -20,7 +18,8 @@ INTERFACE
 USES
   System.SysUtils, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls,
-  LightCore.AppData, LightVcl.Common.AppData, InternetLabel, LightVcl.Common.AppDataForm, LightVcl.Visual.CheckBox;
+  LightCore.AppData, LightVcl.Common.AppData, LightVcl.Common.AppDataForm, LightVcl.Visual.CheckBox, LightVcl.Common.VclUtils;
+  {InternetLabel,}
 
 TYPE
   TfrmMain = class(TLightForm)
@@ -48,20 +47,17 @@ TYPE
     catText             : TCategoryPanel;
     catTools            : TCategoryPanel;
     lblDescription      : TLabel;
-    lblHomePage         : TInternetLabel;
     Panel1              : TPanel;
     cat64bit            : TCategoryPanel;
     pnlLeft             : TPanel;
     setFocus4           : TButton;
     btnHelp2            : TButton;
-    lblNoteOta          : TInternetLabel;
     chkReopenLast       : TCubicCheckBox;
     chkHideMainForm     : TCubicCheckBox;
     procedure StartTask       (Sender: TObject);
     procedure btnHelp2Click   (Sender: TObject);
     procedure btnSettingsClick(Sender: TObject);
     procedure btnMouseEnter   (Sender: TObject);
-    procedure btnCrLfClick    (Sender: TObject);
     procedure btnColorPickClick(Sender: TObject);
   private
     LastAgent: Integer;   // Used to restore the last agent
@@ -76,18 +72,8 @@ VAR
 IMPLEMENTATION {$R *.dfm}
 
 USES
-
-   LightVcl.Common.ExecuteShell,
-
-
-
    dutAgentFactory,
-
-   LightVcl.Common.IniFileQuick,
-   FormColorPicker,
-   FormOptions,
-
-   FormAgent;
+   LightVcl.Common.ExecuteShell, LightVcl.Common.IniFileQuick, FormColorPicker, FormOptions, FormAgent;
 
 
 {-------------------------------------------------------------------------------------------------------------
@@ -95,21 +81,67 @@ USES
 -------------------------------------------------------------------------------------------------------------}
 
 procedure TfrmMain.FormPostInitialize;
+var
+  i, j, k: Integer;
+  Panel: TCategoryPanel;
+  Surface: TCategoryPanelSurface;
+  Control: TControl;
+  Btn: TButton;
 begin
   inherited FormPostInitialize;
 
   if AppData.RunningFirstTime
   then ExecuteURL(AppData.ProductWelcome);
 
+  // Settings
   AppData.CreateFormHidden(TfrmOptions, frmOptions, asFull);
   AppData.Initializing:= FALSE;
 
-  // Reopen the last agent
-  LastAgent:= ReadInteger('LastAgent', -1);
-  if chkReopenLast.Checked AND (LastAgent > 0)
-  then CreateAgentForm(LastAgent);
-
+  // Hide main form
   if chkHideMainForm.Checked then Hide;
+
+  // Select and reopen the last agent
+  LastAgent:= ReadInteger('LastAgent', -1);
+  if LastAgent > 0 then
+    begin
+      // Select the last agent
+      // Iterate through all Category Panels and their components to find the button
+      for i := 0 to Categories.ControlCount - 1 do
+      begin
+        if Categories.Controls[i] is TCategoryPanel then
+        begin
+          Panel := TCategoryPanel(Categories.Controls[i]);
+          // Loop 2: Check the controls (which should be the TCategoryPanelSurface)
+          for j := 0 to Panel.ControlCount - 1 do
+          begin
+            Surface := Panel.Controls[j] as TCategoryPanelSurface; // This is confirmed to be TCategoryPanelSurface
+            // Loop 3: Iterate through the controls on the TCategoryPanelSurface
+            // We assume the buttons are directly on the surface
+            for k := 0 to Surface.ControlCount - 1 do
+            begin
+              Control := Surface.Controls[k];
+
+              if (Control is TButton) then
+              begin
+                Btn := TButton(Control);
+                if Btn.Tag = LastAgent then
+                begin
+                  // Setting focus and reopening
+                  // Note: Panel.Expanded := True may be needed if the category starts collapsed
+                  Panel.Collapsed := False; // Ensure the panel is visible before setting focus
+                  LightVcl.Common.VclUtils.SetFocus(Btn);
+
+                  // We found it, so we can stop searching and proceed to reopen
+                  if chkReopenLast.Checked
+                  then CreateAgentForm(LastAgent);
+                  Exit; // Exit the FormPostInitialize procedure
+                end;
+              end;
+            end;
+          end;
+        end;
+      end;
+    end;
 end;
 
 
@@ -117,8 +149,6 @@ procedure TfrmMain.FormPreRelease;
 begin
   WriteInteger('LastAgent', LastAgent);
 end;
-
-
 
 
 {-------------------------------------------------------------------------------------------------------------
@@ -156,13 +186,6 @@ end;
 procedure TfrmMain.btnSettingsClick(Sender: TObject);
 begin
   frmOptions.Show;
-end;
-
-
-
-procedure TfrmMain.btnCrLfClick(Sender: TObject);
-begin
-  ExecuteShell('FixEnters.exe')
 end;
 
 
