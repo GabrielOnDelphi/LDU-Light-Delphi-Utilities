@@ -128,6 +128,7 @@ object frmAgentResults: TfrmAgentResults
       Width = 191
       Height = 110
       Align = alTop
+      Color = clBtnFace
       TabOrder = 2
       Visible = False
     end
@@ -159,6 +160,17 @@ object frmAgentResults: TfrmAgentResults
       Enabled = False
       TabOrder = 4
       OnClick = btnSaveClick
+    end
+    object CheckBox1: TCheckBox
+      AlignWithMargins = True
+      Left = 3
+      Top = 272
+      Width = 191
+      Height = 17
+      Action = actShowPanel
+      Align = alBottom
+      State = cbChecked
+      TabOrder = 5
     end
   end
   object Panel2: TPanel
@@ -211,8 +223,8 @@ object frmAgentResults: TfrmAgentResults
     end
   end
   object PopupMenu: TPopupMenu
-    Left = 385
-    Top = 348
+    Left = 392
+    Top = 378
     object mnuCopyName: TMenuItem
       Caption = 'Copy filename'
       OnClick = mnuCopyNameClick
@@ -224,9 +236,20 @@ object frmAgentResults: TfrmAgentResults
   end
   object DelaySearchFiles: TTimer
     Enabled = False
-    Interval = 2000
+    Interval = 1500
     OnTimer = DelaySearchFilesTimer
     Left = 392
     Top = 256
+  end
+  object ActionList: TActionList
+    Left = 391
+    Top = 316
+    object actShowPanel: TAction
+      AutoCheck = True
+      Caption = 'Show right panel (Ctrl+R)'
+      Checked = True
+      ShortCut = 16466
+      OnExecute = actShowPanelExecute
+    end
   end
 end

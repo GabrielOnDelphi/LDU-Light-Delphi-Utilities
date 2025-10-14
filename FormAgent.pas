@@ -1,47 +1,57 @@
-unit FormAgent;
+﻿unit FormAgent;
+
+{-------------------------------------------------------------------------------------------------------------
+   www.GabrielMoraru.com
+--------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------}
 
 interface
 
 uses
   Winapi.Windows, System.SysUtils, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Menus, Vcl.Mask,
-  LightCore.SearchResult, dutBase, LightVcl.Visual.PathEdit, LightVcl.Common.AppDataForm;
+  LightCore.SearchResult, dutBase, LightVcl.Visual.PathEdit, LightVcl.Common.AppDataForm, System.Actions,
+  Vcl.ActnList;
 
 type
   TfrmAgentResults = class(TLightForm)
+    ActionList  : TActionList;
+    actShowPanel: TAction;
+    btnExclude  : TButton;
+    btnReplace  : TButton;
+    btnSave     : TButton;
+    btnSearch   : TButton;
+    CheckBox1   : TCheckBox;
+    chkRelaxed  : TCheckBox;
     Container   : TPanel;
-    splResults  : TSplitter;
-    PopupMenu   : TPopupMenu;
+    DelaySearchFiles: TTimer;
+    edtFilter   : TLabeledEdit;
+    edtPath     : TCubicPathEdit;
+    lblInpOut   : TLabel;
+    lbxResults  : TListBox;
+    mmoStats    : TMemo;
     mnuCopyName : TMenuItem;
     mnuOpen     : TMenuItem;
-    pnlFiles: TPanel;
-    lbxResults  : TListBox;
-    pnlRight    : TPanel;
-    btnSearch   : TButton;
-    btnReplace  : TButton;
-    mmoStats    : TMemo;
-    splVertical : TSplitter;
-    chkRelaxed  : TCheckBox;
     Panel2      : TPanel;
-    edtFilter   : TLabeledEdit;
-    btnExclude  : TButton;
-    edtPath     : TCubicPathEdit;
-    btnSave     : TButton;
-    lblInpOut: TLabel;
-    DelaySearchFiles: TTimer;
-    procedure FormDestroy        (Sender: TObject);
-    procedure lbxResultsClick    (Sender: TObject);
-    procedure lbxResultsDblClick (Sender: TObject);
-    procedure mnuCopyNameClick   (Sender: TObject);
-    procedure mnuOpenClick       (Sender: TObject);
-    procedure FormKeyPress       (Sender: TObject; var Key: Char);
-    procedure btnSearchClick     (Sender: TObject);
-    procedure FormClose          (Sender: TObject; var Action: TCloseAction);
-    procedure btnReplaceClick    (Sender: TObject);
-    procedure edtPathPathChanged (Sender: TObject);
-    procedure btnExcludeClick    (Sender: TObject);
-    procedure btnSaveClick       (Sender: TObject);
+    pnlFiles    : TPanel;
+    pnlRight    : TPanel;
+    PopupMenu   : TPopupMenu;
+    splResults  : TSplitter;
+    splVertical : TSplitter;
+    procedure FormDestroy          (Sender: TObject);
+    procedure lbxResultsClick      (Sender: TObject);
+    procedure lbxResultsDblClick   (Sender: TObject);
+    procedure mnuCopyNameClick     (Sender: TObject);
+    procedure mnuOpenClick         (Sender: TObject);
+    procedure FormKeyPress         (Sender: TObject; var Key: Char);
+    procedure btnSearchClick       (Sender: TObject);
+    procedure FormClose            (Sender: TObject; var Action: TCloseAction);
+    procedure btnReplaceClick      (Sender: TObject);
+    procedure edtPathPathChanged   (Sender: TObject);
+    procedure btnExcludeClick      (Sender: TObject);
+    procedure btnSaveClick         (Sender: TObject);
     procedure DelaySearchFilesTimer(Sender: TObject);
+    procedure actShowPanelExecute  (Sender: TObject);
   private
     Searched: Boolean;
     procedure ShowEditor;
@@ -50,7 +60,7 @@ type
     procedure StartTask;
     procedure SetCaption(const Msg: string);
     procedure SetAgent(ID: integer);
-    procedure DoSearch;
+    function ListFiles: TStringList;
   public
     Agent: TBaseAgent;
     procedure Reset;
@@ -68,8 +78,9 @@ procedure CreateAgentForm(ID: integer);
 IMPLEMENTATION {$R *.dfm}
 
 USES
-   LightVcl.Common.IO, LightCore, LightCore.Time, LightCore.Types, LightCore.IO, LightCore.TextFile, LightCore.AppData, LightVcl.Common.AppData, LightVcl.Visual.INIFile, LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell,
-   FormOTA, FormEditor, FormOptions, FormExclude,
+   LightVcl.Common.IO, LightCore, LightCore.Time, LightCore.Types, LightCore.IO, LightCore.TextFile,
+   LightCore.AppData, LightVcl.Common.AppData, LightVcl.Visual.INIFile, LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell,
+   FormOTA, FormEditor, FormOptions, FormExclude, LightVcl.Common.EllipsisText,
    dutAgentFactory;
 
 
@@ -78,10 +89,26 @@ USES
    PRE-CONSTRUCTOR
 -------------------------------------------------------------------------------------------------------------}
 procedure CreateAgentForm(ID: integer);
-VAR
+var
   frmAgResults: TfrmAgentResults;
+  i: Integer;
 begin
-  AppData.CreateForm(TfrmAgentResults, frmAgResults, TRUE, asFull);
+ // if this agent is already open in a form, don't open a new form. Bring the existing form to front.
+ for i := 0 to Application.ComponentCount - 1 do
+  begin
+    if Application.Components[i] is TfrmAgentResults then
+    begin
+      frmAgResults:= TfrmAgentResults(Application.Components[i]);
+      if (frmAgResults.Agent <> NIL)
+      and (frmAgResults.Agent.ClassType = IDToClassName(ID)) then  // Check if the agent type matches the one we are trying to create
+      begin
+        frmAgResults.BringToFront;
+        Exit;
+      end;
+    end;
+  end;
+
+  AppData.CreateForm(TfrmAgentResults, frmAgResults, TRUE, asPosOnly);
   frmAgResults.SetAgent(ID); // SET AGENT
 end;
 
@@ -107,11 +134,8 @@ begin
 
   // EXPLORER & FILTER
   Refresh;                         // Refresh the main form so the frmExplorer is shown in the correct position
-  edtPathPathChanged(NIL);         // Read files in folder. This could take a while for large folders
-
-  if frmExclude = NIL
-  then AppData.CreateFormHidden(TfrmExclude, frmExclude)
-  else frmExclude.Show;
+  edtPath.Path:= Agent.LastPath;
+  //edtPathPathChanged(NIL);         // Read files in folder. This could take a while for large folders
 
   // EDITOR
   AppData.CreateFormHidden(TfrmEditor, frmEditor);
@@ -127,7 +151,7 @@ end;
 procedure TfrmAgentResults.FormPostInitialize;
 begin
   inherited FormPostInitialize;
-  LightVcl.Visual.INIFile.LoadForm(Self);
+  //LightVcl.Visual.INIFile.LoadForm(Self);
   lblInpOut.Caption:= 'Input files:';
   pnlFiles.Align:= alClient;
 end;
@@ -174,7 +198,11 @@ end;
 
 procedure TfrmAgentResults.SetCaption(CONST Msg: string);
 begin
-  Caption:= Agent.AgentName+ ' - '+ Msg;
+  if Agent = nil then Exit;
+
+  if Msg = ''
+  then Caption:= Agent.AgentName
+  else Caption:= Agent.AgentName+ ' - '+ Msg;
 end;
 
 procedure TfrmAgentResults.btnReplaceClick(Sender: TObject);
@@ -186,27 +214,29 @@ end;
 procedure TfrmAgentResults.StartTask;
 var
    CurFile: string;
-   FileList: TStringList;
+   List: TStringList;
 begin
   Reset;
+  Agent.Clear;
   if NOT DirectoryExistMsg(edtPath.Path) then EXIT;
 
-  Agent.Clear;
-  lblInpOut.Caption:= 'Searching:';
-  SetCaption('Searching:');
   btnSave.Enabled:= TRUE;
   Screen.Cursor:= crHourGlass;
-
-  FileList:= edtPath.GetFiles(edtFilter.Text, True, True, frmExclude.mmoExclude.Lines);
+  List:= ListFiles;
   TRY
-    for CurFile in FileList do
+    Assert(not DelaySearchFiles.Enabled, 'It is critical to stop the timer before we start the search, otherwise, when the timer is up it will perform the ListFiles and it will replace the files in our list box!');
+    lbxResults.Clear;
+
+    for CurFile in List do
        begin
          Agent.Execute(CurFile);      // Instructs the parser that we start parsing a new file. It wil create a new TSearchResult record for it.
          if Agent.SearchResults.Last.Found
          then
            begin
-             //ToDo 3: truncate file name if too long
-             lbxResults.AddItem(Agent.SearchResults.Last.FileName + TAB+ ' Found at: '+ Agent.SearchResults.Last.PositionsAsString, Agent.SearchResults.Last);
+             // truncate file name if too long
+             var s:= GetEllipsisText(Agent.SearchResults.Last.FileName, lbxResults.Canvas, lbxResults.Width - 50);
+             Assert(Agent.SearchResults.Last <> nil, 'btnReplaceClick - Last record is NIL!');
+             lbxResults.AddItem(s + TAB+ ' Found at: '+ Agent.SearchResults.Last.PositionsAsString, Agent.SearchResults.Last);
              lbxResults.Refresh;
            end
          else
@@ -217,35 +247,36 @@ begin
 
       // Show global statistics
       mmoStats.Text:= '';
-      mmoStats.Lines.Add('Searched '        + IntToStr(FileList.Count)  + ' files.');
+      mmoStats.Lines.Add('Searched '        + IntToStr(List.Count)  + ' files.');
       mmoStats.Lines.Add('Found in '        + IntToStr(Agent.FoundFiles)+ ' files.');
       mmoStats.Lines.Add('Total positions: '+ IntToStr(Agent.FoundLines));
 
       // Load first result
+      Searched:= True;
       LoadFirstResult;
-
-      SetCaption('Done. Searched '+ IntToStr(FileList.Count)+ ' files. Found in  '+ IntToStr(Agent.FoundFiles)+ ' files.');
   FINALLY
+    SetCaption('Done. Searched '+ IntToStr(List.Count)+ ' files. Found in  '+ IntToStr(Agent.FoundFiles)+ ' files.');
     Screen.Cursor:= crDefault;
-    FreeAndNil(FileList);
+    FreeAndNil(List);
   END;
 
   if Agent.FoundFiles > 0
   then
     begin
-      lblInpOut.Caption:= 'Found files:';
+      lblInpOut.Caption:= 'Found in:';
       pnlFiles.Align := alTop;
       pnlFiles.Height:= Container.Height DIV 3;
       splResults.Top := pnlFiles.Top+ pnlFiles.Height+1;
       splResults.Visible:= TRUE;
     end
   else
-    lblInpOut.Caption:= 'No files found.';
+    lblInpOut.Caption:= 'No entries found.';
 end;
 
 
 procedure TfrmAgentResults.Reset;
 begin
+  DelaySearchFiles.Enabled:= False;
   lblInpOut.Caption:= '';
   mmoStats.Text    := '';
   mmoStats.Visible := FALSE;
@@ -276,8 +307,6 @@ end;
 -------------------------------------------------------------------------------------------------------------}
 procedure TfrmAgentResults.LoadFirstResult;
 begin
-  Searched:= True;
-
   if lbxResults.Items.Count > 0
   then
     begin
@@ -293,7 +322,9 @@ end;
 { Returns the object selected by the user }
 function TfrmAgentResults.GetSelectedSearch: TSearchResult;
 begin
+  Assert(lbxResults.Items.Count > 0);
   Result:= lbxResults.Items.Objects[lbxResults.ItemIndex] as TSearchResult;
+  Assert(Result <> nil, 'Nil in GetSelectedSearch!');
 end;
 
 
@@ -334,8 +365,8 @@ begin
   if Searched
   then
     if GetSelectedSearch <> NIL
-    then OpenFileInIDE(GetSelectedSearch, frmEditor.SearchRecPos)
-    else
+    then OpenFileInIDE(GetSelectedSearch, frmEditor.CurSearchPos)
+    else AppData.LogError('No selection!')
   else
     if  (lbxResults.Items.Count > 0)
     and (lbxResults.ItemIndex >= 0)
@@ -354,9 +385,7 @@ begin
 
   for VAR SrcResult in Agent.SearchResults DO
     for VAR Position in SrcResult.Positions DO
-     begin
        s:= s+ Trim(Position.CodeLine)+ CRLF;
-     end;
   StringToFile(edtPath.Path+ 'Output Lines.txt', s);
 end;
 
@@ -389,8 +418,11 @@ begin
   Container.Align:= alClient;
   splResults.Visible:= False;
 
-  frmEditor.Container.Parent:= frmEditor;
-  frmEditor.ResetViewer;
+  if (frmEditor <> nil) and (frmEditor.Container <> nil) then
+    begin
+      frmEditor.Container.Parent:= frmEditor; // Bring the container back to its form, hiding it from FormAgent
+      frmEditor.ResetViewer;
+    end;
 end;
 
 
@@ -415,50 +447,78 @@ procedure TfrmAgentResults.edtPathPathChanged(Sender: TObject);
 begin
   if AppData.Initializing then EXIT;
 
+  Agent.LastPath:= edtPath.Path;
+
   // If the user type C:\ then the program will try to list all files in C:\.
   // This is incredibly slow. So we restart the timer each time the user types something.
   // We perform the search only if the user stopped typing.
   DelaySearchFiles.Enabled:= FALSE;
   DelaySearchFiles.Enabled:= TRUE;
+
+  Reset;
 end;
 
 
-procedure TfrmAgentResults.DoSearch;
-var Files, ExcludedFiles: TStringList;
+// Refresh files
+function TfrmAgentResults.ListFiles: TStringList;
+var ExcludedFiles: TStringList;
 begin
-  Files:= NIL;
+  Result:= NIL;
   ExcludedFiles:= NIL;
   if AppData.Initializing then EXIT;
 
-  // Stop timer
-  if DelaySearchFiles.Enabled then EXIT;
-
   if DirectoryExists(edtPath.Path) then
    begin
+     lblInpOut.Caption:= 'Reading folder...';
+     lblInpOut.Refresh;
+     //SetCaption('Searching:');
+     Screen.Cursor:= crHourGlass;
      try
        ExcludedFiles:= GetExcludedFiles;
-       Files:= ListFilesOf(edtPath.Path, edtFilter.Text, True, TRUE, NIL);
-       lblInpOut.caption:= 'Input files: ';
-       lbxResults.Items.Assign(Files);
+       Result:= ListFilesOf(edtPath.Path, edtFilter.Text, True, TRUE, ExcludedFiles);
+       lblInpOut.Caption:= 'Discovered files (click "Search" to start): ';
+       lbxResults.Items.Assign(Result);
      finally
-       FreeAndNil(Files);
        FreeAndNil(ExcludedFiles);
+       Screen.Cursor:= crDefault;
+       SetCaption('');
      end;
    end;
 end;
 
 
+
+
 procedure TfrmAgentResults.DelaySearchFilesTimer(Sender: TObject);
 begin
-  DelaySearchFiles.Enabled:= FALSE;
-  DoSearch;
+  DelaySearchFiles.Enabled:= FALSE;  // Stop the timer
+
+  var Files:= ListFiles;
+  try
+  finally
+    FreeAndNil(Files);
+  end;
+end;
+
+
+procedure TfrmAgentResults.actShowPanelExecute(Sender: TObject);
+begin
+  pnlRight.Visible:= actShowPanel.Checked;
 end;
 
 
 procedure TfrmAgentResults.btnExcludeClick(Sender: TObject);
 begin
+  //ToDo: AI: save the exclude path with the agent. Put a checkbox called "Share path with all agents".
+
+  if frmExclude = NIL
+  then AppData.CreateForm(TfrmExclude, frmExclude);
   frmExclude.show;
 end;
+
+
+
+
 
 
 end.
