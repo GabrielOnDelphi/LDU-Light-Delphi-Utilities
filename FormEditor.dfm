@@ -14,7 +14,6 @@ object frmEditor: TfrmEditor
   ScreenSnap = True
   ShowHint = True
   SnapBuffer = 3
-  OnCreate = FormCreate
   OnDestroy = FormDestroy
   TextHeight = 15
   object Container: TPanel
@@ -51,6 +50,7 @@ object frmEditor: TfrmEditor
       ParentColor = False
       ParentFont = False
       Transparent = False
+      WordWrap = True
     end
     object mmoView: TMemo
       AlignWithMargins = True
@@ -120,6 +120,7 @@ object frmEditor: TfrmEditor
         Height = 27
         Action = actLoadIDE
         Align = alRight
+        Enabled = False
         TabOrder = 1
       end
       object btnPrev: TButton

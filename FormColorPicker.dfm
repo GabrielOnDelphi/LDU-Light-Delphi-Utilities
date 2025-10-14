@@ -29,7 +29,7 @@ object frmClrPick: TfrmClrPick
     object Label4: TLabel
       Left = 1
       Top = 275
-      Width = 593
+      Width = 35
       Height = 17
       Cursor = crHandPoint
       Align = alBottom

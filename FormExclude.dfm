@@ -51,16 +51,46 @@ object frmExclude: TfrmExclude
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    object btnSave: TButton
+    DesignSize = (
+      377
+      41)
+    object btnApply: TButton
+      AlignWithMargins = True
+      Left = 164
+      Top = 3
+      Width = 102
+      Height = 35
+      Hint = 'Apply'
+      Align = alRight
+      Caption = 'Apply'
+      TabOrder = 0
+      OnClick = btnApplyClick
+    end
+    object Button1: TButton
       AlignWithMargins = True
       Left = 272
       Top = 3
       Width = 102
       Height = 35
+      Hint = 'Apply and close'
       Align = alRight
-      Caption = 'Save'
-      TabOrder = 0
-      OnClick = btnSaveClick
+      Caption = 'Ok'
+      TabOrder = 1
+      OnClick = Button1Click
+    end
+    object chkGlobal: TCheckBox
+      Left = 10
+      Top = 10
+      Width = 97
+      Height = 17
+      Hint = 'Apply this path to all agents'
+      Anchors = [akLeft]
+      Caption = 'Global path'
+      Checked = True
+      Enabled = False
+      State = cbChecked
+      TabOrder = 2
+      OnClick = chkGlobalClick
     end
   end
 end

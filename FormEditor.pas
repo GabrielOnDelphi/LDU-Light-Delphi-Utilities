@@ -1,5 +1,11 @@
 ﻿unit FormEditor;
 
+{-------------------------------------------------------------------------------------------------------------
+   www.GabrielMoraru.com
+--------------------------------------------------------------------------------------------------------------
+   Rudimentary PAS editor so the user can edit the file "in place" without opening it in the IDE
+-------------------------------------------------------------------------------------------------------------}
+
 interface
 
 uses
@@ -27,17 +33,16 @@ type
     actLoadIDE: TAction;
     actSave: TAction;
     actResetSearch: TAction;
-    procedure FormCreate      (Sender: TObject);
-    procedure FormDestroy     (Sender: TObject);
-    procedure TimerRewTimer   (Sender: TObject);
-    procedure actNextExecute(Sender: TObject);
-    procedure actPrevExecute(Sender: TObject);
-    procedure actLoadIDEExecute(Sender: TObject);
-    procedure actResetSearchExecute(Sender: TObject);
-    procedure actSaveExecute(Sender: TObject);
-    procedure mmoViewChange(Sender: TObject);
-    procedure mmoViewClick(Sender: TObject);
-    procedure mmoViewMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure FormDestroy           (Sender: TObject);
+    procedure TimerRewTimer         (Sender: TObject);
+    procedure actNextExecute        (Sender: TObject);
+    procedure actPrevExecute        (Sender: TObject);
+    procedure actLoadIDEExecute     (Sender: TObject);
+    procedure actResetSearchExecute (Sender: TObject);
+    procedure actSaveExecute        (Sender: TObject);
+    procedure mmoViewChange         (Sender: TObject);
+    procedure mmoViewClick          (Sender: TObject);
+    procedure mmoViewMouseDown      (Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
     BlinkCount: Integer;
     procedure scrollToLine(LineNumber: Integer);
@@ -46,7 +51,7 @@ type
     function GetSelectedSearch: TSearchResult;
   public
     frmResults: TfrmAgentResults;
-    SearchRecPos: Integer;                          { Current position in the PAS file, shown to the user. Increased or decreased every time we click Next/Prev }
+    CurSearchPos: Integer;                          { Current position in the PAS file, shown to the user. Increased or decreased every time we click Next/Prev }
     procedure ResetViewer;
     procedure LoadSearchRes(FileRec: TSearchResult);
     procedure LoadFileRaw(const FileName: string);
@@ -60,12 +65,6 @@ implementation {$R *.dfm}
 USES
    LightCore.IO, FormOTA, LightCore.Pascal;
 
-
-
-procedure TfrmEditor.FormCreate(Sender: TObject);
-begin
-  //LoadForm(Self);
-end;
 
 
 procedure TfrmEditor.FormDestroy(Sender: TObject);
@@ -94,6 +93,7 @@ begin
   lblRewind.Visible:= False;
   lblCurFile.Caption:= '';
   lblDetails.Caption:= '';
+  lblDetails.Hint:= '';
   //mmoView.Perform(EM_SCROLLCARET, 0, 0);
 end;
 
@@ -101,7 +101,7 @@ end;
 { Reset the search pos and scroll at the top of the document }
 procedure TfrmEditor.actResetSearchExecute(Sender: TObject);
 begin
-  SearchRecPos      := 0;
+  CurSearchPos      := 0;
   mmoView.SelStart  := 0;
   mmoView.SelLength := 0;
   scrollToLine(0);
@@ -121,9 +121,11 @@ begin
   btnPrev.Visible:= btnNext.Visible;
   btnResetSearch.Visible:= btnNext.Visible;
   lblDetails.Visible:= True;
+  btnOpenIDE.Enabled:= True;
 
   // Show file info
-  lblCurFile.Caption:= FileRec.FileName+ ' - '+ IntToStr(FileRec.Count)+ 'x';
+  lblCurFile.Caption:= ExtractFileName(FileRec.FileName)+ '     '+ IntToStr(FileRec.Count)+ 'x';
+  lblCurFile.Hint   := FileRec.FileName;
 
   // Load file and rewind
   mmoView.Lines.LoadFromFile(FileRec.FileName);
@@ -132,7 +134,6 @@ begin
   //Scroll to first found pos
   scrollToPos(0);
 end;
-
 
 
 { Show the clicked raw PAS file }
@@ -147,6 +148,7 @@ begin
   btnResetSearch.Visible:= False;
   lblDetails.Visible:= False;
 
+
   // Show file info
   lblCurFile.Caption:= FileName;
 
@@ -158,6 +160,8 @@ begin
   frmResults.mmoStats.Lines.Add('Total lines: '+ IntToStr(mmoView.Lines.Count));
   frmResults.mmoStats.Lines.Add('Comments: '+ IntToStr(CountComments(FileName)));
 end;
+
+
 
 
 {-------------------------------------------------------------------------------------------------------------
@@ -186,16 +190,17 @@ end;
 
 procedure TfrmEditor.showDetails;
 begin
-  var Position:= GetSelectedSearch.Positions[SearchRecPos];
-  lblDetails.Caption:= 'Pos: '+ IntToStr(Position.LinePos)+ ':'+IntToStr(Position.ColumnPos)+ ' - '+
-                        Position.Offender+ ' -> '+
-                        Position.WarningMsg;
+  var Position:= GetSelectedSearch.Positions[CurSearchPos];
+  var s:= 'Pos: '+ IntToStr(Position.LinePos)+ ':'+IntToStr(Position.ColumnPos);
+  if Position.WarningMsg <> '' then s:= s + ' - '+ Position.Offender+ ' -> '+ Position.WarningMsg;
+  lblDetails.Caption:= s;
+  lblDetails.Hint:= lblDetails.Caption;
 end;
 
 
 procedure TfrmEditor.actLoadIDEExecute(Sender: TObject);
 begin
-  OpenFileInIDE(GetSelectedSearch, SearchRecPos);
+  OpenFileInIDE(GetSelectedSearch, CurSearchPos);
 end;
 
 
@@ -204,12 +209,12 @@ begin
   Assert(GetSelectedSearch <> nil, 'No SearchResult assigned');
   TimerRew.Enabled:= True;
 
-  Inc(SearchRecPos);
-  if SearchRecPos > High(GetSelectedSearch.Positions)
-  then SearchRecPos:= 0;
+  Inc(CurSearchPos);
+  if CurSearchPos > High(GetSelectedSearch.Positions)
+  then CurSearchPos:= 0;
 
   // Scroll
-  scrollToPos(SearchRecPos);
+  scrollToPos(CurSearchPos);
 end;
 
 
@@ -218,12 +223,12 @@ begin
   Assert(GetSelectedSearch <> nil, 'No SearchResult assigned');
   TimerRew.Enabled:= True;
 
-  Dec(SearchRecPos);
-  if SearchRecPos < 0
-  then SearchRecPos:= 0;
+  Dec(CurSearchPos);
+  if CurSearchPos < 0                              // If we are at the very top...
+  then CurSearchPos:= GetSelectedSearch.Count-1;   // ...wrap to the last entry
 
   // Scroll
-  scrollToPos(SearchRecPos);
+  scrollToPos(CurSearchPos);
 end;
 
 
@@ -257,10 +262,12 @@ begin
  //ToDo: show cursor position
 end;
 
+
 procedure TfrmEditor.mmoViewMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
  //ToDo: show cursor position
 end;
+
 
 procedure TfrmEditor.actSaveExecute(Sender: TObject);
 begin

@@ -20,7 +20,7 @@ object frmOptions: TfrmOptions
     293)
   TextHeight = 15
   object chkShowAllFiles: TCheckBox
-    Left = 28
+    Left = 24
     Top = 43
     Width = 109
     Height = 17
@@ -32,7 +32,7 @@ object frmOptions: TfrmOptions
     TabOrder = 0
   end
   object chkBackup: TCheckBox
-    Left = 28
+    Left = 24
     Top = 73
     Width = 214
     Height = 17
@@ -43,7 +43,7 @@ object frmOptions: TfrmOptions
     TabOrder = 1
   end
   object chkNewWnd: TCheckBox
-    Left = 28
+    Left = 24
     Top = 103
     Width = 214
     Height = 17
@@ -55,7 +55,7 @@ object frmOptions: TfrmOptions
     TabOrder = 2
   end
   object chkSaveStats: TCheckBox
-    Left = 29
+    Left = 25
     Top = 132
     Width = 132
     Height = 17

@@ -34,7 +34,8 @@ TYPE
 
 
 IMPLEMENTATION {$R *.dfm}
-uses LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell;
+uses
+  LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell, LightCore.AppData, LightVcl.Common.AppData;
 
 
 
@@ -88,7 +89,7 @@ end;
 
 procedure TfrmClrPick.Label4Click(Sender: TObject);
 begin
-  ExecuteURL('https://www.GabrielMoraru.com')
+  ExecuteURL(AppData.ProductHome)
 end;
 
 
