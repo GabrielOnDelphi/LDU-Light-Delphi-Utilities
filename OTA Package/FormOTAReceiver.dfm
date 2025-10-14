@@ -22,5 +22,6 @@ object frmOTAReceiver: TfrmOTAReceiver
     Height = 99
     Align = alClient
     TabOrder = 0
+    WordWrap = False
   end
 end

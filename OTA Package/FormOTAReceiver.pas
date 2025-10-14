@@ -13,8 +13,7 @@
 interface
 
 uses
-  Windows, Messages,
-  System.SysUtils, System.Classes,
+  Windows, Messages, System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
   ToolsAPI;
 
@@ -38,29 +37,6 @@ implementation {$R *.dfm}
 
 var
   frmOTAReceiver: TfrmOTAReceiver;
-
-
-
-
-procedure TfrmOTAReceiver.WMCopyData(var Msg: TWMCopyData);
-var s : string;
-begin
-  { We need a true copy of the data before it disappear }
-  SetString(s, PChar(Msg.CopyDataStruct.lpData), Msg.CopyDataStruct.cbData div SizeOf(Char));
-
-  mmo.Text:= s;
-
-  // This is a nasty way to send/receive/decode the text! ToDo: send data as binary
-  EditorFileName := mmo.Lines.Values['FileName'];
-  edLine         := StrToIntDef(mmo.Lines.Values['Line'], 0);
-  edCol          := StrToIntDef(mmo.Lines.Values['Col'], 0);
-  InsertedComment:= Trim(mmo.Lines.Values['Comment']);
-
-  if EditorFileName <> ''
-  then OpenInIDEEditor;
-
-  msg.Result := Length(mmo.Lines.Text);
-end;
 
 
 procedure TfrmOTAReceiver.OpenInIDEEditor;
@@ -168,16 +144,41 @@ begin
 end;
 
 
+
+procedure TfrmOTAReceiver.WMCopyData(var Msg: TWMCopyData);
+var s : string;
+begin
+  { We need a true copy of the data before it disappear }
+  SetString(s, PChar(Msg.CopyDataStruct.lpData), Msg.CopyDataStruct.cbData div SizeOf(Char));
+
+  if mmo.WordWrap then
+   begin
+     ShowMessage('LightSaber IDE Plugin problem - The path will be truncated if mmo.WordWrap is enabled!');
+     mmo.WordWrap:= False;
+   end;
+
+  mmo.Text:= s;
+
+  // This is a nasty way to send/receive/decode the text! ToDo: send data as binary
+  EditorFileName := mmo.Lines.Values['FileName'];
+  edLine         := StrToIntDef(mmo.Lines.Values['Line'], 0);
+  edCol          := StrToIntDef(mmo.Lines.Values['Col'], 0);
+  InsertedComment:= Trim(mmo.Lines.Values['Comment']);
+
+  if EditorFileName <> ''
+  then OpenInIDEEditor;
+
+  msg.Result := Length(mmo.Lines.Text);
+end;
+
+
 procedure Register;
 begin
   FreeAndNil(frmOTAReceiver);
 
   frmOTAReceiver := TfrmOTAReceiver.Create(Nil);
-  frmOTAReceiver.Show;    // Can I send a message to a window that is invisible?
-  //frmOTAReceiver.SendToBack;
+  frmOTAReceiver.Show;    // Can I send a message to a window that is invisible?  // Looks like we need to show the window before we can send messages to it.
   frmOTAReceiver.Left:= -1800;
-  // PostMessage(frmOTAReceiver.Handle, WM_SYSCOMMAND, SC_MINIMIZE, 0);
-  // frmOTAReceiver.Close;   // Looks like we need to show the window before we can send messages to it.
 end;
 
 
