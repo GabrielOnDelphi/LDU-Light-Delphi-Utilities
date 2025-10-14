@@ -1,23 +1,23 @@
-UNIT dutFindInterface;
+﻿UNIT dutFindInterface;
 
 {=============================================================================================================
-   Gabriel Moraru
    2025.01
    www.GabrielMoraru.com
    See Copyright file
 --------------------------------------------------------------------------------------------------------------
    FIND INTERFACE IMPLEMENTATION
 
-   Finds the class(es) that implement the specified method
+  Finds the class(es) that implement the specified method.
+  If the method belongs to an interface, the agent will list all classes
+  that implement that interface.
 -------------------------------------------------------------------------------------------------------------}
 
 INTERFACE
 
 USES
-  System.SysUtils, System.Classes, System.Math,
+  System.SysUtils, System.Classes, System.Math, System.StrUtils,
   Vcl.Controls, Vcl.Forms, Vcl.Mask, Vcl.ExtCtrls,
   LightVcl.Common.AppDataForm, LightCore.SearchResult, dutBase, Vcl.StdCtrls;
-
 
 TYPE
   TfrmSettingsIntf = class(TLightForm)
@@ -25,15 +25,19 @@ TYPE
     edtMethod: TLabeledEdit;
     edtIntfName: TLabeledEdit;
   public
-  end;   //ToDo: Remember user's input data
+  end;
 
 
 TYPE
   TAgent_FindInterface = class(TBaseAgent)
   private
-    MethodToFind: string;
-    InterfaceName: string;
+    FMethodToFind: string;
+    FInterfaceName: string;
     FormSettings: TfrmSettingsIntf;
+
+    // Helper routines
+    function LineContainsMethod(const ALine, AMethodType, AMethodName: string; out AColumn: Integer): Boolean;
+    function LineDeclaresInterfaceImplementor(ALineIndex: Integer): Boolean;
   public
     constructor Create(aBackupFile: Boolean); override;
     destructor Destroy; override;
@@ -49,8 +53,7 @@ TYPE
 
 IMPLEMENTATION {$R *.dfm}
 USES
-   LightCore.AppData, LightVcl.Common.AppData
-, LightCore.Pascal, LightCore, LightCore.Time;
+   LightCore.AppData, LightVcl.Common.AppData, LightCore.Pascal, LightCore, LightCore.Time;
 
 
 class function TAgent_FindInterface.AgentName: string;
@@ -70,105 +73,141 @@ end;
 constructor TAgent_FindInterface.Create(aBackupFile: Boolean);
 begin
   inherited Create(aBackupFile);
-  AppData.CreateForm(TfrmSettingsIntf, FormSettings, FALSE, asFull);  //Freed by: HostPanel
+  AppData.CreateForm(TfrmSettingsIntf, FormSettings, FALSE, asFull);
 end;
 
 
-procedure TAgent_FindInterface.Execute(const FileName: string);
-var
-   sLine: string;
-   iColumn, iLine: Integer;
-   ClassNamePrefix: string;
-
-
-  { MethodType represents a procedure or function. It can be one of these: "procedure T" or "function T"}
-  function FindMethod(const MethodType, MethodName: string): Boolean;
-  var iPos2, iPos3: Integer;
-  begin
-   Result:= False;
-   iColumn:= PosInsensitive(MethodType, sLine);
-   if iColumn > 0 then
-    begin
-       //ToDo: trim spaces in sLine (SearchRelaxed?)
-       iPos2:= PosInsensitive('.'+ MethodName+ '(', sLine);  // Search only full words
-       iPos3:= PosInsensitive('.'+ MethodName+ ';', sLine);  // Search only full words
-
-       const x= iColumn+ Length(MethodType)+ 3;
-
-       if (iPos2 > x) or (iPos3 > x)
-       then Result:= True;   // Returns the line(s) where the text was found
-    end;
-  end;
-
-  // Once the method was found, we search backwords (from cur pos to top) 100 lines to see which class implements it
-  function FindImplementor: Boolean;
-  begin
-     if InterfaceName = ''
-     then Exit(TRUE)
-     else Result:= FALSE;
-
-     var UpPoint:= Min(0, iLine-100);
-     for var j:= iLine downto UpPoint do
-       if (PosInsensitive(',' + InterfaceName, TextBody[j]) > 7)
-       or (PosInsensitive(', '+ InterfaceName, TextBody[j]) > 7)
-       then Exit(True);
-  end;
-
+destructor TAgent_FindInterface.Destroy;
 begin
-  inherited Execute(FileName);
-
-  MethodToFind  := FormSettings.edtMethod.Text;
-  InterfaceName := FormSettings.edtIntfName.Text;
-
-  if FileExists(AppData.ExeFolder+ 'taifun')
-  then ClassNamePrefix:= 'C'
-  else ClassNamePrefix:= 'T';
-
-  for iLine:= 0 to TextBody.Count-1 do
-    begin
-      sLine:= TextBody[iLine];
-      if not LineIsAComment(sLine) then    // Ignore lines that start with a comment symbol:   // { (*
-       begin
-         // Search for procedures
-         if FindMethod('procedure '+ ClassNamePrefix, MethodToFind)     // T or C
-         and FindImplementor
-         then SearchResults.Last.AddNewPos(iLine, iColumn, sLine);
-
-         // Search for functions
-         if FindMethod('function '+ ClassNamePrefix, MethodToFind)      // T or C
-         and FindImplementor
-         then SearchResults.Last.AddNewPos(iLine, iColumn, sLine);
-       end;
-    end;
-
-  Finalize; // Increment counters
+  FormSettings.Container.Parent:= FormSettings; // Bring the container back
+  FreeAndNil(FormSettings);
+  inherited;
 end;
 
 
-
-class function TAgent_FindInterface.CanReplace: Boolean;
-begin
-  Result:= FALSE;
-end;
-
-
-
-
-
-{ FORM }
 procedure TAgent_FindInterface.DockSettingsForm(HostPanel: TPanel);
 begin
   FormSettings.Container.Parent:= HostPanel;
 end;
 
 
-destructor TAgent_FindInterface.Destroy;
+procedure TAgent_FindInterface.Execute(const FileName: string);
+var
+  sLine: string;
+  iLine, iColumn: Integer;
+  ClassNamePrefix: string;
 begin
-  FreeAndNil(FormSettings);
-  inherited;
+  inherited Execute(FileName);
+
+  // Read user settings once
+  FMethodToFind  := Trim(FormSettings.edtMethod.Text);
+  FInterfaceName := Trim(FormSettings.edtIntfName.Text);
+
+  if FMethodToFind = '' then
+  begin
+    // nothing to search for
+    Exit;
+  end;
+
+  if FileExists(AppData.ExeFolder + 'taifun') then
+    ClassNamePrefix := 'C'
+  else
+    ClassNamePrefix := 'T';
+
+  // Loop lines
+  for iLine := 0 to TextBody.Count - 1 do
+  begin
+    sLine := TextBody[iLine];
+
+    if LineIsAComment(sLine) then
+      Continue;
+
+    // normalize trimmed line for method detection
+    // we use LineContainsMethod which returns the column where MethodType starts
+    if LineContainsMethod(sLine, 'procedure ' + ClassNamePrefix, FMethodToFind, iColumn) then
+    begin
+      if LineDeclaresInterfaceImplementor(iLine) then
+        SearchResults.Last.AddNewPos(iLine, iColumn, sLine);
+    end
+    else if LineContainsMethod(sLine, 'function ' + ClassNamePrefix, FMethodToFind, iColumn) then
+    begin
+      if LineDeclaresInterfaceImplementor(iLine) then
+        SearchResults.Last.AddNewPos(iLine, iColumn, sLine);
+    end;
+  end;
+
+  Finalize; // Increment counters / finalize run
 end;
 
 
+// Return TRUE if the line contains MethodType (e.g. 'procedure T') and the implementation '.MethodName' occurs after it. Outputs column = position where MethodType was found (1-based). Case-insensitive.
+function TAgent_FindInterface.LineContainsMethod(const ALine, AMethodType, AMethodName: string; out AColumn: Integer): Boolean;
+var
+  SubLine: string;
+  pMethodType, pImpl: Integer;
+  DotName: string;
+begin
+  Result := False;
+  AColumn := 0;
+  pMethodType := PosInsensitive(AMethodType, ALine);
+  if pMethodType = 0 then
+    Exit;
+
+  // after MethodType we expect either a class-qualified implementation like "TMyClass.MyMethod(" or ".MyMethod"
+  // create substring starting at the MethodType position to avoid false matches earlier in the line
+  SubLine := Copy(ALine, pMethodType, Length(ALine) - pMethodType + 1);
+
+  DotName := '.' + AMethodName;
+  // search for ".MethodName("  OR ".MethodName:" OR ".MethodName;"
+  pImpl := PosInsensitive(DotName + '(', SubLine);
+  if pImpl = 0 then
+    pImpl := PosInsensitive(DotName + ':', SubLine);
+  if pImpl = 0 then
+    pImpl := PosInsensitive(DotName + ';', SubLine);
+
+  if pImpl > 0 then
+  begin
+    AColumn := pMethodType;
+    Result := True;
+  end;
+end;
+
+// Walk backwards up to 100 lines (but not below 0) and try to find a "class( ... IMyInterface ... )" declaration.
+// If no interface name is provided (FInterfaceName = ''), we accept any implementor (return TRUE).
+// This is a heuristic — a proper Pascal parser would be better for correctness.
+function TAgent_FindInterface.LineDeclaresInterfaceImplementor(ALineIndex: Integer): Boolean;
+var
+  UpPoint, i: Integer;
+  LineText: string;
+  HasClassKeyword: Boolean;
+begin
+  // if user didn't request an interface name, accept immediately
+  if FInterfaceName = '' then
+    Exit(True);
+
+  // clamp start of backward search
+  UpPoint := Max(0, ALineIndex - 100);
+
+  Result := False;
+  for i := ALineIndex downto UpPoint do
+  begin
+    LineText := TextBody[i];
+
+    // We're looking for lines that contain 'class' and the interface name.
+    // Typical form: TMyClass = class(TObject, IMyInterface, IOther)
+    HasClassKeyword := PosInsensitive('class', LineText) > 0;
+    if HasClassKeyword and (PosInsensitive(FInterfaceName, LineText) > 0) then Exit(True);
+
+    // Sometimes the class line and interface list are split across lines: check subsequent lines above for '(' and the interface name too
+    if PosInsensitive('(', LineText) > 0 then
+      if PosInsensitive(FInterfaceName, LineText) > 0 then Exit(True);
+  end;
+end;
 
 
-end.
+class function TAgent_FindInterface.CanReplace: Boolean;
+begin
+  Result := FALSE;
+end;
+
+END.
