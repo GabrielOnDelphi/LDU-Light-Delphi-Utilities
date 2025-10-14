@@ -24,3 +24,7 @@ descript.ion
 /OTA Package/__history
 *.json
 *.dsv
+/ Tool - Add paths to Library Paths/CLI/__history
+/ Tool - Add paths to Library Paths
+/ Tool - Read PE_Flag from exe file
+taifun
