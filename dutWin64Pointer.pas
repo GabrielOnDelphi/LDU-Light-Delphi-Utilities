@@ -1,4 +1,4 @@
-UNIT dutWin64Pointer;
+﻿UNIT dutWin64Pointer;
 
 {=============================================================================================================
    Gabriel Moraru
@@ -50,9 +50,10 @@ USES
 class function TAgent_PointerTypecast.Description: string;
 begin
   Result:= 'On Win64 we cannot assume anymore that SizeOf(Pointer)=SizeOf(Integer/Cardinal/Longint).'+ CRLF+
-           'This tool searches for invalid pointer typecasts such as Pointer(Integer,  Pointer(PInteger,  Pointer(Cardinal,  etc, and recomends fixes.'+ CRLF+
+           'This agent searches for invalid pointer typecasts such as Pointer(Integer,  Pointer(PInteger,  Pointer(Cardinal,  etc, and recomends fixes.'+ CRLF+
            'The Relaxed version searches for the generic "Pointer(", which can result in LOTS of fake positive results!';
 end;
+
 
 procedure TAgent_PointerTypecast.Execute(const FileName: string);
 var
