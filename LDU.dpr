@@ -22,7 +22,7 @@ uses
   dutFindCode in 'dutFindCode.pas' {frmSettingsFindCode},
   dutFindInterface in 'dutFindInterface.pas' {frmSettingsIntf},
   dutBom in 'dutBom.pas',
-  LightVcl.Common.AppData in '..\..\LightSaber\FrameVCL\LightVcl.Common.AppData.pas',
+  LightVcl.Visual.AppData in '..\..\LightSaber\FrameVCL\LightVcl.Visual.AppData.pas',
   LightCore.AppData in '..\..\LightSaber\LightCore.AppData.pas',
   dutFixLineEndings in 'dutFixLineEndings.pas' {frmSettings};
 

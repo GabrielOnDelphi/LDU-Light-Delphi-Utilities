@@ -23,7 +23,7 @@ IMPLEMENTATION
 USES LightCore.SearchResult, LightCore.IO, LightCore.TextFile, LightVcl.Common.IO, LightCore, LightCore.Time, LightCore.Types, LightVcl.Common.SystemTime, LightVcl.Common.Clipboard, LightVcl.Common.Dialogs,
      LightVcl.Graph.Util, LightVcl.Common.WinVersion, LightVcl.Common.WinVersionAPI, LightVcl.Common.ExeVersion, LightVcl.Common.CenterControl, LightCore.WrapString,LightVcl.Internet.HTML, LightVcl.Common.Sound, LightVcl.Common.Debugger,
      LightCore.StringList, LightVcl.Internet, LightCore.Internet, LightVcl.Common.Shell, LightVcl.Common.SystemTime, LightVcl.Common.Clipboard,
-     LightVcl.Visual.AssociateExt, LightVcl.Common.ExecuteShell, LightCore.AppData, LightVcl.Common.AppData
+     LightVcl.Visual.AssociateExt, LightVcl.Common.ExecuteShell, LightCore.AppData, LightVcl.Visual.AppData
 ;
 
 

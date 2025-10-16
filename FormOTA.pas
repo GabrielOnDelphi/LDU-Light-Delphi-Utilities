@@ -16,7 +16,7 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, Vcl.Controls, Vcl.Forms, LightVcl.Common.AppDataForm,Vcl.StdCtrls,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, Vcl.Controls, Vcl.Forms, LightVcl.Visual.AppDataForm,Vcl.StdCtrls,
   LightCore.SearchResult;
 
 type
@@ -37,7 +37,7 @@ procedure OpenFileInIDE(SearchRes: TSearchResult; CurPos: Integer);  overload;
 implementation {$R *.dfm}
 
 USES
-   LightVcl.Common.IO, LightCore, LightCore.Time, LightCore.Types, LightVcl.Common.Dialogs, LightCore.AppData, LightVcl.Common.AppData;
+   LightVcl.Common.IO, LightCore, LightCore.Time, LightCore.Types, LightVcl.Common.Dialogs, LightCore.AppData, LightVcl.Visual.AppData;
 
 
 procedure OpenFileInIDE(const FileName: string);

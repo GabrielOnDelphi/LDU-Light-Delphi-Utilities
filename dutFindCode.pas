@@ -13,7 +13,7 @@ INTERFACE
 USES
   System.SysUtils, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  LightVcl.Common.AppData, LightCore.SearchResult, dutBase, LightVcl.Common.AppDataForm, LightVcl.Visual.Memo;
+  LightVcl.Visual.AppData, LightCore.SearchResult, dutBase, LightVcl.Visual.AppDataForm, LightVcl.Visual.Memo;
 
 
 TYPE

@@ -10,7 +10,7 @@ interface
 uses
   Winapi.Windows, System.SysUtils, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Menus, Vcl.Mask,
-  LightCore.SearchResult, dutBase, LightVcl.Visual.PathEdit, LightVcl.Common.AppDataForm, System.Actions,
+  LightCore.SearchResult, dutBase, LightVcl.Visual.PathEdit, LightVcl.Visual.AppDataForm, System.Actions,
   Vcl.ActnList;
 
 type
@@ -79,7 +79,7 @@ IMPLEMENTATION {$R *.dfm}
 
 USES
    LightVcl.Common.IO, LightCore, LightCore.Time, LightCore.Types, LightCore.IO, LightCore.TextFile,
-   LightCore.AppData, LightVcl.Common.AppData, LightVcl.Visual.INIFile, LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell,
+   LightCore.AppData, LightVcl.Visual.AppData, LightVcl.Visual.INIFile, LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell,
    FormOTA, FormEditor, FormOptions, FormExclude, LightVcl.Common.EllipsisText,
    dutAgentFactory;
 

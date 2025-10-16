@@ -17,7 +17,7 @@ INTERFACE
 USES
   System.SysUtils, System.Classes, System.Math, System.StrUtils,
   Vcl.Controls, Vcl.Forms, Vcl.Mask, Vcl.ExtCtrls,
-  LightVcl.Common.AppDataForm, LightCore.SearchResult, dutBase, Vcl.StdCtrls;
+  LightVcl.Visual.AppDataForm, LightCore.SearchResult, dutBase, Vcl.StdCtrls;
 
 TYPE
   TfrmSettingsIntf = class(TLightForm)
@@ -53,7 +53,7 @@ TYPE
 
 IMPLEMENTATION {$R *.dfm}
 USES
-   LightCore.AppData, LightVcl.Common.AppData, LightCore.Pascal, LightCore, LightCore.Time;
+   LightCore.AppData, LightVcl.Visual.AppData, LightCore.Pascal, LightCore, LightCore.Time;
 
 
 class function TAgent_FindInterface.AgentName: string;

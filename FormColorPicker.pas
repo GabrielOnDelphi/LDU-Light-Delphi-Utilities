@@ -4,7 +4,7 @@
 INTERFACE
 
 USES
-  Windows, SysUtils, Classes, Graphics, Controls, Vcl.Forms, LightVcl.Common.AppDataForm, Dialogs,
+  Windows, SysUtils, Classes, Graphics, Controls, Vcl.Forms, LightVcl.Visual.AppDataForm, Dialogs,
   StdCtrls, LightCore, LightCore.Time, LightCore.Types, LightVcl.Graph.Util, ExtCtrls, Vcl.Mask;
 
 TYPE
@@ -35,7 +35,7 @@ TYPE
 
 IMPLEMENTATION {$R *.dfm}
 uses
-  LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell, LightCore.AppData, LightVcl.Common.AppData;
+  LightVcl.Common.Clipboard, LightVcl.Common.ExecuteShell, LightCore.AppData, LightVcl.Visual.AppData;
 
 
 

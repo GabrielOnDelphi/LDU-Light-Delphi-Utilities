@@ -18,7 +18,7 @@ INTERFACE
 USES
   System.SysUtils, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls,
-  LightCore.AppData, LightVcl.Common.AppData, LightVcl.Common.AppDataForm, LightVcl.Visual.CheckBox, LightVcl.Common.VclUtils;
+  LightCore.AppData, LightVcl.Visual.AppData, LightVcl.Visual.AppDataForm, LightVcl.Visual.CheckBox, LightVcl.Common.VclUtils;
   {InternetLabel,}
 
 TYPE

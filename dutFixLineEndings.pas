@@ -16,7 +16,7 @@ INTERFACE
 USES
   System.SysUtils, System.Classes, System.StrUtils,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls,
-  LightCore.SearchResult, dutBase, LightVcl.Visual.Memo, LightVcl.Common.AppDataForm;
+  LightCore.SearchResult, dutBase, LightVcl.Visual.Memo, LightVcl.Visual.AppDataForm;
 	
 TYPE
   TfrmSettings = class(TLightForm)
@@ -53,7 +53,7 @@ IMPLEMENTATION {$R *.dfm}
 USES
    LightCore.IO, LightCore.TextFile, LightVcl.Common.IO, LightCore.AppData, LightCore, LightCore.Time, LightCore.Types, LightVcl.Common.SystemTime, LightVcl.Visual.INIFile,
    LightVcl.Common.Dialogs,
-   LightVcl.Common.AppData,
+   LightVcl.Visual.AppData,
    LightVcl.Common.IniFileQuick,
    LightVcl.Common.Clipboard;  
    	 

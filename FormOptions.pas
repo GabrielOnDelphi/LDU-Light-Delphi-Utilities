@@ -8,7 +8,7 @@
 interface
 
 uses
-  System.Classes, Vcl.Controls, Vcl.Forms, LightVcl.Common.AppDataForm, Vcl.StdCtrls;
+  System.Classes, Vcl.Controls, Vcl.Forms, LightVcl.Visual.AppDataForm, Vcl.StdCtrls;
 
 type
   TfrmOptions = class(TLightForm)

@@ -5,7 +5,7 @@ INTERFACE
 USES
   System.SysUtils, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls,
-  LightVcl.Common.AppDataForm;
+  LightVcl.Visual.AppDataForm;
 
 TYPE
   TfrmExclude = class(TLightForm)
@@ -33,7 +33,7 @@ VAR
 IMPLEMENTATION {$R *.dfm}
 
 USES
-   LightCore.AppData, LightCore.TextFile, LightVcl.Common.AppData;
+   LightCore.AppData, LightCore.TextFile, LightVcl.Visual.AppData;
 
 
 
