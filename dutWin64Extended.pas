@@ -4,7 +4,7 @@
    Gabriel Moraru
    2022
    www.GabrielMoraru.com
-   See Copyright file
+   Github.com/GabrielOnDelphi/Delphi-LightSaber/blob/main/System/Copyright.txt
 --------------------------------------------------------------------------------------------------------------
    Porting code to 64 bit.
    Checks for use of "extended"

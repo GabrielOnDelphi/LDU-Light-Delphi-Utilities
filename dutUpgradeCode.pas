@@ -4,7 +4,7 @@
    Gabriel Moraru
    2020
    www.GabrielMoraru.com
-   See Copyright file
+   Github.com/GabrielOnDelphi/Delphi-LightSaber/blob/main/System/Copyright.txt
 --------------------------------------------------------------------------------------------------------------
    Upgrade code to higher standards:
     * Find abusive usage of Try/Except (places where we swallow exceptions)

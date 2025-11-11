@@ -4,7 +4,7 @@
    Gabriel Moraru
    2021
    www.GabrielMoraru.com
-   See Copyright file
+   Github.com/GabrielOnDelphi/Delphi-LightSaber/blob/main/System/Copyright.txt
 --------------------------------------------------------------------------------------------------------------
    Base class.
    Provides support for checking PAS files for specific lines of code.

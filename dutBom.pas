@@ -4,7 +4,7 @@ UNIT dutBom;
    Gabriel Moraru
    2022
    www.GabrielMoraru.com
-   See Copyright file
+   Github.com/GabrielOnDelphi/Delphi-LightSaber/blob/main/System/Copyright.txt
 --------------------------------------------------------------------------------------------------------------
    UTF8
    Convert between ANSI and UTF8

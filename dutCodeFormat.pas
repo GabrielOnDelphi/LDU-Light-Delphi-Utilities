@@ -4,7 +4,7 @@
    Gabriel Moraru
    2024
    www.GabrielMoraru.com
-   See Copyright file
+   Github.com/GabrielOnDelphi/Delphi-LightSaber/blob/main/System/Copyright.txt
 --------------------------------------------------------------------------------------------------------------
    CODE FORMAT TIGHT
 -------------------------------------------------------------------------------------------------------------}

@@ -1,4 +1,4 @@
-﻿package IDEFileReceiver;
+﻿package Expert_DUT_Receiver;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
@@ -35,7 +35,8 @@ requires
   VclSmp;
 
 contains
-  FormOTAReceiver in 'FormOTAReceiver.pas' {frmOTAReceiver};
+  FormOTAReceiver in 'FormOTAReceiver.pas',
+  uOpenFileIDE in '..\..\..\LightSaber\IDE Experts\uOpenFileIDE.pas';
 
 end.
 
