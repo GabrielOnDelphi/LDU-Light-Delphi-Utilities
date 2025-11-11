@@ -28,3 +28,5 @@ descript.ion
 / Tool - Add paths to Library Paths
 / Tool - Read PE_Flag from exe file
 taifun
+/IDE Expert/__history
+*.res
