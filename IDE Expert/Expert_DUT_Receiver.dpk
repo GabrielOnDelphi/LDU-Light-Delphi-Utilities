@@ -35,7 +35,7 @@ requires
   VclSmp;
 
 contains
-  FormOTAReceiver in 'FormOTAReceiver.pas',
+  FormReceiver in 'FormReceiver.pas',
   uOpenFileIDE in '..\..\..\LightSaber\IDE Experts\uOpenFileIDE.pas';
 
 end.

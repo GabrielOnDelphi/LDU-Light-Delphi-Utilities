@@ -101,7 +101,7 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="designide.dcp"/>
         <DCCReference Include="VclSmp.dcp"/>
-        <DCCReference Include="FormOTAReceiver.pas"/>
+        <DCCReference Include="FormReceiver.pas"/>
         <DCCReference Include="..\..\..\LightSaber\IDE Experts\uOpenFileIDE.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
