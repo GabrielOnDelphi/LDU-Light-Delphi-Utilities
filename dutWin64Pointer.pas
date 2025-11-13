@@ -100,6 +100,7 @@ begin
         if iColumn > 0 then
 
           // But ignore valid typecasts
+		  todo: this should be Pointer(UIntPtr)
           if  (PosInsensitive('Pointer(NativeInt',  sLine) < 1)
           and (PosInsensitive('Pointer(NativeUInt', sLine) < 1)
           then SearchResults.Last.AddNewPos(iLine, iColumn, sLine, 'Chance of invalid pointer typecast: Pointer(', 'Check if the cast is correct.');
