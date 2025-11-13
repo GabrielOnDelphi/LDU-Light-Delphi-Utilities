@@ -109,10 +109,9 @@ begin
     Exit;
   end;
 
-  if FileExists(AppData.ExeFolder + 'taifun') then
-    ClassNamePrefix := 'C'
-  else
-    ClassNamePrefix := 'T';
+  if FileExists(AppData.ExeFolder+ 'CustomPrefix')
+  then ClassNamePrefix:= 'C'
+  else ClassNamePrefix:= 'T';
 
   // Loop lines
   for iLine := 0 to TextBody.Count - 1 do
