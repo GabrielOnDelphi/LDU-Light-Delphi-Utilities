@@ -109,7 +109,7 @@ begin
     Exit;
   end;
 
-  if FileExists(AppData.ExeFolder+ 'CustomPrefix')
+  if FileExists(Appdata.AppFolder+ 'CustomPrefix')
   then ClassNamePrefix:= 'C'
   else ClassNamePrefix:= 'T';
 
