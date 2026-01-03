@@ -73,7 +73,7 @@ IMPLEMENTATION {$R *.dfm}
 
 USES
    dutAgentFactory,
-   LightVcl.Common.ExecuteShell, LightVcl.Common.IniFileQuick, FormColorPicker, FormOptions, FormAgent;
+   LightVcl.Common.ExecuteShell, LightCore.INIFileQuick, FormColorPicker, FormOptions, FormAgent;
 
 
 {-------------------------------------------------------------------------------------------------------------
