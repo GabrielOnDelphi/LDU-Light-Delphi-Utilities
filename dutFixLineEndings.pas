@@ -54,7 +54,7 @@ USES
    LightCore.IO, LightCore.TextFile, LightVcl.Common.IO, LightCore.AppData, LightCore, LightCore.Time, LightCore.Types, LightVcl.Common.SystemTime, LightVcl.Visual.INIFile,
    LightVcl.Common.Dialogs,
    LightVcl.Visual.AppData,
-   LightVcl.Common.IniFileQuick,
+   LightCore.INIFileQuick,
    LightVcl.Common.Clipboard;  
    	 
 	 
