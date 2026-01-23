@@ -4,7 +4,7 @@
    2024
    Github.com/GabrielOnDelphi/Delphi-LightSaber/blob/main/System/Copyright.txt
 --------------------------------------------------------------------------------------------------------------
-  This form listens to the WMCopyData message comming from an external program, which transmist the filename of a Delphi file.
+  This form listens to the WMCopyData message comming from an external program, which transmits the filename of a Delphi file.
   When the message is received, the plugin will try to open that file in the Delphi Code Editor.
 
   The form is created when the plugin is loaded into the IDE
