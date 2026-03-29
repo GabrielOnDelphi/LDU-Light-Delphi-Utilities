@@ -208,7 +208,7 @@ object frmAgentResults: TfrmAgentResults
       TabOrder = 1
       OnClick = btnExcludeClick
     end
-    object edtPath: TCubicPathEdit
+    object edtPath: TlightPathEdit
       Left = 0
       Top = 0
       Width = 683

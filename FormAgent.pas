@@ -26,7 +26,7 @@ type
     Container   : TPanel;
     DelaySearchFiles: TTimer;
     edtFilter   : TLabeledEdit;
-    edtPath     : TCubicPathEdit;
+    edtPath     : TlightPathEdit;
     lblInpOut   : TLabel;
     lbxResults  : TListBox;
     mmoStats    : TMemo;

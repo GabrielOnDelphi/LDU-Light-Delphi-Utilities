@@ -45,7 +45,7 @@ object frmSettingsFindCode: TfrmSettingsFindCode
       TabOrder = 0
       Text = ''
     end
-    object mmoExclude: TCubicMemo
+    object mmoExclude: TLightMemo
       AlignWithMargins = True
       Left = 4
       Top = 69

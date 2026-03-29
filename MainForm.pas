@@ -52,8 +52,8 @@ TYPE
     pnlLeft             : TPanel;
     setFocus4           : TButton;
     btnHelp2            : TButton;
-    chkReopenLast       : TCubicCheckBox;
-    chkHideMainForm     : TCubicCheckBox;
+    chkReopenLast       : TLightCheckBox;
+    chkHideMainForm     : TLightCheckBox;
     procedure StartTask       (Sender: TObject);
     procedure btnHelp2Click   (Sender: TObject);
     procedure btnSettingsClick(Sender: TObject);

@@ -406,7 +406,7 @@ object frmMain: TfrmMain
         end
       end
     end
-    object chkReopenLast: TCubicCheckBox
+    object chkReopenLast: TLightCheckBox
       AlignWithMargins = True
       Left = 3
       Top = 547
@@ -420,7 +420,7 @@ object frmMain: TfrmMain
       TabOrder = 1
       AutoSize = True
     end
-    object chkHideMainForm: TCubicCheckBox
+    object chkHideMainForm: TLightCheckBox
       AlignWithMargins = True
       Left = 3
       Top = 524

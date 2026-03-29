@@ -20,7 +20,7 @@ TYPE
   TfrmSettingsFindCode = class(TLightForm)
     Container: TPanel;
     edtText: TLabeledEdit;
-    mmoExclude: TCubicMemo;
+    mmoExclude: TLightMemo;
     lblExcludedWords: TLabel;
   private
     function ExcludedFile: string;
