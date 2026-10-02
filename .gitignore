@@ -31,3 +31,6 @@ taifun
 /IDE Expert/__history
 *.res
 IDE Expert/Expert_OpenFileFromClipboard.lnk
+
+# Temporary files of Claude Code sessions
+Temp/
