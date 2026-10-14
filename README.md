@@ -21,6 +21,8 @@ A set of tools that help you work with PAS files or other IDE-related functional
 * etc  
   
 All tools can be applied at batch to all files in the specified folder (and subfolders).
+
+To compile it you need the [LightSaber](https://github.com/GabrielOnDelphi/Delphi-LightSaber) library and FastMM4. The Debug build also uses the optional [Autopilot for Delphi](https://gabrielmoraru.com/my-delphi-code/autopilot-for-delphi/) bridge, which lets an AI assistant drive the running app.
   
 ---
 

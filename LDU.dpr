@@ -24,6 +24,7 @@ uses
   dutBom in 'dutBom.pas',
   LightVcl.Visual.AppData in '..\..\LightSaber\FrameVCL\LightVcl.Visual.AppData.pas',
   LightCore.AppData in '..\..\LightSaber\LightCore.AppData.pas',
+  {$IFDEF AUTOPILOT}Autopilot.Bridge.Vcl in 'c:\Projects\Projects AI\Autopilot for Delphi\Source\Bridge\Autopilot.Bridge.Vcl.pas',{$ENDIF}{Optional}
   dutFixLineEndings in 'dutFixLineEndings.pas' {frmSettings};
 
 {$R *.res}
@@ -33,5 +34,12 @@ begin
   AppData.ProductWelcome:= 'https://GabrielMoraru.com';
   Application.MainFormOnTaskbar:= TRUE;
   AppData.CreateMainForm(TfrmMain, frmMain, asFull);
+
+  { Optional: Via Autopilot, Claude can run/debug/test this program for you.
+    For example, press "Has BOM?", then press "Search" in the "Search results" window & check the files listed in lbxResults.
+    Don't have AUTOPILOT? Undefine $AUTOPILOT or get it from www.GabrielMoraru.com }
+  {$IFDEF AUTOPILOT}
+   Autopilot.Bridge.Vcl.StartBridge;
+  {$ENDIF}
   AppData.Run;
 end.

@@ -72,7 +72,8 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
-        <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+        <DCC_Define>AUTOPILOT;DEBUG;$(DCC_Define)</DCC_Define>
+        <DCC_UnitSearchPath>c:\Projects\Projects AI\Autopilot for Delphi\Source\Bridge;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
         <DCC_RangeChecking>true</DCC_RangeChecking>
     </PropertyGroup>
